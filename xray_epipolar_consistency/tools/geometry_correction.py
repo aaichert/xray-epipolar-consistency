@@ -901,7 +901,12 @@ def main(config_path):
         print(f"Saved optimized trajectory to:\n{trajectory_optimized_path}")
 
     # Trigger reconstructions if configured
-    if create_report and reconstruct_configs is not None:
+    run_reconstruction = config.get("run_reconstruction")
+    if run_reconstruction is None:
+        # Backward compatibility fallback: check if reconstruction_config is specified
+        run_reconstruction = "reconstruction_config" in config
+        
+    if run_reconstruction and reconstruct_configs is not None:
         initial_cfg, optimized_cfg = reconstruct_configs
         import subprocess
         
@@ -969,7 +974,7 @@ def main(config_path):
     b64_slices = None
     recon_metrics = None
     histogram_svg = None
-    if create_report and reconstruct_configs is not None:
+    if create_report and run_reconstruction and reconstruct_configs is not None:
         recon_misaligned_path = orig_output_path_abs
         recon_optimized_path = orig_dir / f"{orig_base}_{output_dir.name}{orig_ext}"
         
