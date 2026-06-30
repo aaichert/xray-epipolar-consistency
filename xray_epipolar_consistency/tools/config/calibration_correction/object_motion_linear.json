@@ -1,0 +1,27 @@
+{
+  "name": "Object Motion Linear Drift",
+  "module": "xray_epipolar_consistency.optimizer",
+  "classname": "OptimizerPowell",
+  "parameterization": {
+    "module": "xray_epipolar_consistency.parameterization.time_variant",
+    "classname": "LinearDrift",
+    "num_control_points": 2,
+    "referenced_classname": "ObjectPose",
+    "referenced_config": {
+      "parameters": {
+        "translation_x": { "opt": true },
+        "translation_y": { "opt": true },
+        "translation_z": { "opt": true },
+        "rotation_x": { "opt": false },
+        "rotation_y": { "opt": false },
+        "rotation_z": { "opt": false }
+      }
+    }
+  },
+  "kwargs": {
+    "options": {
+      "maxiter": 50,
+      "ftol": 1e-5
+    }
+  }
+}

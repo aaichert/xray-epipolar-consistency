@@ -1,0 +1,62 @@
+[build-system]
+requires = ["scikit-build-core>=0.8.2", "pybind11>=2.12.0"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "xray-epipolar-consistency"
+version = "0.1.0"
+description = "Epipolar Consistency Conditions for X-ray images"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    { name = "Andre Aichert" }
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = [
+    "numpy>=1.20",
+    "scipy>=1.7",
+    "rich>=12.0",
+    "tqdm>=4.60",
+    "ProjectiveGeometry23>=1.1.0",
+    "matplotlib>=3.5",
+    "pynrrd>=1.0.0",
+    "pillow>=9.0",
+    "scikit-image>=0.19",
+    "svg_snip>=1.0",
+    "py7zr>=0.20",
+    "ct-recon-fdk-astra"
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[tool.scikit-build]
+wheel.expand-macos-universal-tags = true
+wheel.packages = ["xray_epipolar_consistency"]
+
+[tool.setuptools.package-data]
+"xray_epipolar_consistency" = [
+    "tools/config/*.json",
+    "tools/config/calibration_correction/*.json",
+    "example_data/proj000.nrrd",
+    "example_data/proj040.nrrd",
+    "example_data/synthetic01.nrrd",
+    "example_data/synthetic02.nrrd",
+    "example_data/synthetic_pumpkin/fullscan_18views_600x400.json",
+    "example_data/synthetic_pumpkin/fullscan_18views_600x400.nrrd",
+    "example_data/synthetic_pumpkin/fullscan_18views_600x400.ompl",
+    "example_data/synthetic_pumpkin/pumpkin_u8.nrrd",
+    "example_data/synthetic_pumpkin/README.md",
+    "example_data/20201111_walnut_raw_data/20201111_walnut_raw_data/20201111_walnut_.txt",
+    "example_data/20201111_walnut_raw_data/20201111_walnut_raw_data/process.py",
+    "example_data/20201111_walnut_raw_data/README.md",
+    "example_data/20201111_walnut_raw_data/suggest_recon_volume.py",
+    "example_data/20201111_walnut_raw_data/trajectory_as_ompl.py",
+    "example_data/20201111_walnut_raw_data/trajectory_720_1x1.ompl"
+]
+

@@ -1,0 +1,34 @@
+{
+  "name": "Detector Misalignment Calibration",
+  "module": "xray_epipolar_consistency.optimizer",
+  "classname": "OptimizerPowell",
+  "parameterization": {
+    "module": "xray_epipolar_consistency.parameterization.base",
+    "classname": "ParameterizationChain",
+    "parameterizations": [
+      {
+        "module": "xray_epipolar_consistency.parameterization.detector_shift",
+        "classname": "DetectorShift",
+        "parameters": {
+          "shift_u": { "opt": true },
+          "shift_v": { "opt": true }
+        }
+      },
+      {
+        "module": "xray_epipolar_consistency.parameterization.detector_orientation",
+        "classname": "DetectorOrientation",
+        "parameters": {
+          "tilt_roll": { "opt": true },
+          "slant_yaw": { "opt": true },
+          "skew_pitch": { "opt": true }
+        }
+      }
+    ]
+  },
+  "kwargs": {
+    "options": {
+      "maxiter": 50,
+      "ftol": 1e-5
+    }
+  }
+}

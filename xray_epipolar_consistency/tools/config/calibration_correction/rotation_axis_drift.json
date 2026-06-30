@@ -1,0 +1,25 @@
+{
+  "name": "Rotation Axis Drift Calibration",
+  "module": "xray_epipolar_consistency.optimizer",
+  "classname": "OptimizerPowell",
+  "parameterization": {
+    "module": "xray_epipolar_consistency.parameterization.time_variant",
+    "classname": "LinearDrift",
+    "num_control_points": 4,
+    "referenced_classname": "RotationAxis",
+    "referenced_config": {
+      "parameters": {
+        "tilt_pitch": { "opt": true },
+        "tilt_roll": { "opt": true },
+        "offset_lateral": { "opt": true },
+        "offset_radial": { "opt": true }
+      }
+    }
+  },
+  "kwargs": {
+    "options": {
+      "maxiter": 50,
+      "ftol": 1e-5
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "Object Motion Spline (Breathing)",
+  "module": "xray_epipolar_consistency.optimizer",
+  "classname": "OptimizerPowell",
+  "parameterization": {
+    "module": "xray_epipolar_consistency.parameterization.time_variant",
+    "classname": "ContinuousMotion",
+    "num_control_points": 5,
+    "referenced_classname": "ObjectPose",
+    "referenced_config": {
+      "parameters": {
+        "translation_x": { "opt": true },
+        "translation_y": { "opt": true },
+        "translation_z": { "opt": true },
+        "rotation_x": { "opt": true },
+        "rotation_y": { "opt": true },
+        "rotation_z": { "opt": true }
+      }
+    }
+  },
+  "kwargs": {
+    "options": {
+      "maxiter": 50,
+      "ftol": 1e-5
+    }
+  }
+}

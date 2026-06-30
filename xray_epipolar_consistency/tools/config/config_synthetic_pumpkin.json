@@ -1,0 +1,15 @@
+{
+  "input_data": "../../example_data/synthetic_pumpkin/fullscan_18views_600x400.json",
+  "output_dir": "../../output/synthetic_pumpkin/",
+  "reconstruction_config": "../../../../reconstruct/example_data/fullscan_180views_600x400.json",
+  "metric_config": {
+    "convert_to_line_integral": false,
+    "dtr_size_factor": 1.0,
+    "num_planes": 900
+  },
+  "geometry_optimization": {
+    "stages": [
+      "calibration_correction/stage2.json"
+    ]
+  }
+}

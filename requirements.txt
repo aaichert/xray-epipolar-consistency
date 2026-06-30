@@ -1,0 +1,11 @@
+pynrrd
+pillow
+scikit-image
+ProjectiveGeometry23
+svg_snip
+matplotlib
+tqdm
+numpy
+scipy
+rich
+ct-recon-fdk-astra

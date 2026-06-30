@@ -1,0 +1,7 @@
+{
+  "image0_path": "../xray_epipolar_consistency/example_data/synthetic01.nrrd",
+  "image1_path": "../xray_epipolar_consistency/example_data/synthetic02.nrrd",
+  "num_planes": 1800,
+  "object_radius": 200.0,
+  "output_dir": "output/synthetic_pumpkin"
+}

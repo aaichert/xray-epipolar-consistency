@@ -1,0 +1,6 @@
+{
+  "image0_path": "../xray_epipolar_consistency/example_data/proj000.nrrd",
+  "image1_path": "../xray_epipolar_consistency/example_data/proj040.nrrd",
+  "num_planes": 1800,
+  "object_radius": 50.0
+}

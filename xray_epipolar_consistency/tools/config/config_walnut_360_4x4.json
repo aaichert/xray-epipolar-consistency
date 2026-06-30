@@ -1,0 +1,15 @@
+{
+  "input_data": "../../example_data/20201111_walnut_raw_data/walnut_18_4x4.json",
+  "output_dir": "../../output/walnut_360_4x4/",
+  "reconstruction_config": "../../example_data/20201111_walnut_raw_data/walnut_360_4x4.json",
+  "metric_config": {
+    "convert_to_line_integral": true,
+    "dtr_size_factor": 1.0,
+    "num_planes": 900
+  },
+  "geometry_optimization": {
+    "stages": [
+      "calibration_correction/stage2.json"
+    ]
+  }
+}

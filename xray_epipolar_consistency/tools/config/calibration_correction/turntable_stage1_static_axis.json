@@ -1,0 +1,21 @@
+{
+  "name": "Turntable Stage 1: Static Axis Calibration",
+  "module": "xray_epipolar_consistency.optimizer",
+  "classname": "OptimizerPowell",
+  "parameterization": {
+    "module": "xray_epipolar_consistency.parameterization.rotation_axis",
+    "classname": "RotationAxis",
+    "parameters": {
+      "tilt_pitch": { "opt": true },
+      "tilt_roll": { "opt": true },
+      "offset_lateral": { "opt": true },
+      "offset_radial": { "opt": true }
+    }
+  },
+  "kwargs": {
+    "options": {
+      "maxiter": 50,
+      "ftol": 1e-5
+    }
+  }
+}

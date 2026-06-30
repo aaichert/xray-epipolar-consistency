@@ -1,0 +1,23 @@
+{
+  "name": "Thermal Drift Calibration",
+  "module": "xray_epipolar_consistency.optimizer",
+  "classname": "OptimizerPowell",
+  "parameterization": {
+    "module": "xray_epipolar_consistency.parameterization.time_variant",
+    "classname": "LinearDrift",
+    "num_control_points": 4,
+    "referenced_classname": "DetectorShift",
+    "referenced_config": {
+      "parameters": {
+        "shift_u": { "opt": true },
+        "shift_v": { "opt": true }
+      }
+    }
+  },
+  "kwargs": {
+    "options": {
+      "maxiter": 50,
+      "ftol": 1e-5
+    }
+  }
+}

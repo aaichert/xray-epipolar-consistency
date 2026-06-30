@@ -1,0 +1,58 @@
+{
+  "data_dir": "./",
+  "ompl_file": "walnut_18_4x4.ompl",
+  "image_files": [
+    "walnut_18_4x4.nrrd"
+  ],
+  "voxel_dimensions": [
+    320,
+    320,
+    480
+  ],
+  "model_matrix": [
+    [
+      0.05,
+      0.0,
+      0.0,
+      -8.5
+    ],
+    [
+      0.0,
+      0.05,
+      0.0,
+      -8
+    ],
+    [
+      0.0,
+      0.0,
+      0.05,
+      -12
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "image_transform": [
+    [
+      1.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      1.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "output_file": "walnut_reconstruction_18_4x4.nrrd",
+  "convert_to_line_integral": true,
+  "filter_type": "ram-lak"
+}

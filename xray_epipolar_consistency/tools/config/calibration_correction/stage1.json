@@ -1,0 +1,36 @@
+{
+  "name": "Stage 1: Optimize Detector Tilt and Rotation Axis Offset",
+  "module": "xray_epipolar_consistency.optimizer",
+  "classname": "OptimizerPowell",
+  "parameterization": {
+    "module": "xray_epipolar_consistency.parameterization.base",
+    "classname": "ParameterizationChain",
+    "parameterizations": [
+      {
+        "module": "xray_epipolar_consistency.parameterization.detector_orientation",
+        "classname": "DetectorOrientation",
+        "parameters": {
+          "tilt_roll": { "opt": true },
+          "slant_yaw": { "opt": false },
+          "skew_pitch": { "opt": false }
+        }
+      },
+      {
+        "module": "xray_epipolar_consistency.parameterization.rotation_axis",
+        "classname": "RotationAxis",
+        "parameters": {
+          "tilt_pitch": { "opt": false },
+          "tilt_roll": { "opt": false },
+          "offset_lateral": { "opt": true },
+          "offset_radial": { "opt": true }
+        }
+      }
+    ]
+  },
+  "kwargs": {
+    "options": {
+      "maxiter": 50,
+      "ftol": 1e-5
+    }
+  }
+}

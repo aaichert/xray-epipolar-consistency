@@ -1,0 +1,77 @@
+{
+  "name": "Object Motion Spline (Breathing)",
+  "module": "xray_epipolar_consistency.optimizer",
+  "classname": "OptimizerPowell",
+  "parameterization": {
+    "module": "xray_epipolar_consistency.parameterization.base",
+    "classname": "ParameterizationChain",
+    "parameterizations": [
+      {
+        "module": "xray_epipolar_consistency.parameterization.time_variant",
+        "classname": "ContinuousMotion",
+        "num_control_points": 10,
+        "referenced_module": "xray_epipolar_consistency.parameterization.object_pose",
+        "referenced_classname": "ObjectPose",
+        "referenced_config": {
+          "parameters": {
+            "translation_x": {
+              "description": "Object translation X [mm]",
+              "range": [
+                -2.5,
+                2.5
+              ],
+              "opt": true
+            },
+            "translation_y": {
+              "description": "Object translation Y [mm]",
+              "range": [
+                -2.5,
+                2.5
+              ],
+              "opt": true
+            },
+            "translation_z": {
+              "description": "Object translation Z [mm]",
+              "range": [
+                -2.5,
+                2.5
+              ],
+              "opt": true
+            },
+            "rotation_x": {
+              "description": "Object rotation X [degrees]",
+              "range": [
+                -2.0,
+                2.0
+              ],
+              "opt": true
+            },
+            "rotation_y": {
+              "description": "Object rotation Y [degrees]",
+              "range": [
+                -2.0,
+                2.0
+              ],
+              "opt": true
+            },
+            "rotation_z": {
+              "description": "Object rotation Z [degrees]",
+              "range": [
+                -2.0,
+                2.0
+              ],
+              "opt": true
+            }
+          },
+          "prior_knowledge": null
+        }
+      }
+    ]
+  },
+  "kwargs": {
+    "options": {
+      "maxiter": 50,
+      "ftol": 1e-05
+    }
+  }
+}

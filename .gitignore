@@ -1,0 +1,51 @@
+# CMake
+build/
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+*.egg-info/
+.eggs/
+dist/
+.env
+.venv/
+
+# Data/examples
+*.ini
+*.nrrd
+*.ompl
+*.tif
+*.html
+xray_epipolar_consistency/example_data/
+
+
+# Jupyter Notebooks
+*.ipynb
+.ipynb_checkpoints/
+*.png
+tmp/
+.vscode/
+
+
+# Proprietary Waygate code / untracked helpers
+tools/pcproj_from_pca.py
+tools/import_waygate.py
+
+# Generated output
+epipolar_consistency/
+output/
+
+# Binary files
+*.bin

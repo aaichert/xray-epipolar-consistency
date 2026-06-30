@@ -1,0 +1,33 @@
+[GENERAL]
+ProjectName=20201111_walnut_
+Scanner=University of Helsinki Industrial Mathematics Computed Tomography Laboratory
+
+[GEOMETRY]
+DistanceSourceDetector=553.74
+DistanceSourceOffset=110.66
+DistanceOffsetSample=100
+
+[ACQUISITION]
+NumberImages=721
+AngleFirst=0
+AngleInterval=0.5
+AngleLast=360
+
+[DETECTOR]
+Detector=Hamamatsu Photonics C7942CA-22
+DetectorType=EID
+Binning=1x1
+PixelSize=0.050
+ExposureTime=1000
+
+[XRAY]
+Tube=Oxford Instruments XTF5011
+Target=Mo
+Voltage=40
+Current=1
+XRayFilter=None
+XRayFilterThickness=N/A
+
+[PCD]
+PcdEnergyChannels=N/A
+PcdFlatFieldFile=N/A

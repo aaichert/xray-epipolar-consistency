@@ -1,0 +1,41 @@
+{
+  "name": "source_shift_agc",
+  "module": "xray_epipolar_consistency.optimizer",
+  "classname": "OptimizerPowell",
+  "parameterization": {
+    "module": "xray_epipolar_consistency.parameterization.base",
+    "classname": "ParameterizationChain",
+    "parameterizations": [
+      {
+        "module": "xray_epipolar_consistency.parameterization.source_shift_agc",
+        "classname": "SourceShiftAGC",
+        "parameters": {},
+        "prior_knowledge": {
+          "iso_center": [
+            1.4287545990029573e-15,
+            1.4287545990142672e-15,
+            2.1341920392258482e-11
+          ],
+          "rotation_axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "sdd": 553.9999999999527,
+          "sid": 210.00000000000253,
+          "first_principal_ray": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    ]
+  },
+  "kwargs": {
+    "options": {
+      "maxiter": 200,
+      "ftol": 1e-12
+    }
+  }
+}

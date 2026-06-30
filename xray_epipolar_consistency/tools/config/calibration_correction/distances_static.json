@@ -1,0 +1,19 @@
+{
+  "name": "SDD and SID Calibration Correction",
+  "module": "xray_epipolar_consistency.optimizer",
+  "classname": "OptimizerPowell",
+  "parameterization": {
+    "module": "xray_epipolar_consistency.parameterization.distance",
+    "classname": "Distance",
+    "parameters": {
+      "delta_sdd": { "opt": true },
+      "delta_sid": { "opt": true }
+    }
+  },
+  "kwargs": {
+    "options": {
+      "maxiter": 50,
+      "ftol": 1e-5
+    }
+  }
+}
