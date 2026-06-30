@@ -4,9 +4,15 @@
 It is designed as an installable PIP package that compiles the underlying C++/CUDA code and exposes it directly to Python.
 
 The CUDA wrapper exposes the fast implementation of the ECC cost function and comes with a CT calibration correction written in Python.
-
 *Note: The GUI application is no longer included in this repository and will be hosted [in a separate repository.](https://github.com/aaichert/ct_calibration_correction_gui)*
 
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=D3MwqmITM4M">
+    <img src="https://img.youtube.com/vi/D3MwqmITM4M/maxresdefault.jpg" alt="Watch the GUI Application Demo on YouTube" width="80%">
+  </a>
+  <br>
+  <sub>📺 Click the preview above or <a href="https://www.youtube.com/watch?v=D3MwqmITM4M">here</a> to watch the <b>CT Calibration Correction GUI Demo</b>.</sub>
+</p>
 
 
 ## Installation

@@ -1,0 +1,60 @@
+{
+  "name": "stage1_detector_orientation",
+  "module": "xray_epipolar_consistency.optimizer",
+  "classname": "OptimizerPowell",
+  "parameterization": {
+    "module": "xray_epipolar_consistency.parameterization.base",
+    "classname": "ParameterizationChain",
+    "parameterizations": [
+      {
+        "module": "xray_epipolar_consistency.parameterization.detector_orientation",
+        "classname": "DetectorOrientation",
+        "parameters": {
+          "tilt_roll": {
+            "range": [
+              -1.0,
+              1.0
+            ]
+          },
+          "slant_yaw": {
+            "range": [
+              -0.5,
+              0.5
+            ]
+          },
+          "skew_pitch": {
+            "range": [
+              -1.0,
+              1.0
+            ]
+          }
+        },
+        "prior_knowledge": {
+          "iso_center": [
+            1.0062349899239708e-10,
+            1.1991841642350657e-10,
+            3.0334523604433566e-11
+          ],
+          "rotation_axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "sdd": 553.7399999993372,
+          "sid": 210.65999999993517,
+          "first_principal_ray": [
+            0.7660444431187603,
+            -0.6427876096867989,
+            0.0
+          ]
+        }
+      }
+    ]
+  },
+  "kwargs": {
+    "options": {
+      "maxiter": 200,
+      "ftol": 1e-12
+    }
+  }
+}
