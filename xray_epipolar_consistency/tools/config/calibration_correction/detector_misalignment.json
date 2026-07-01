@@ -7,20 +7,27 @@
     "classname": "ParameterizationChain",
     "parameterizations": [
       {
-        "module": "xray_epipolar_consistency.parameterization.detector_shift",
-        "classname": "DetectorShift",
-        "parameters": {
-          "shift_u": { "opt": true },
-          "shift_v": { "opt": true }
-        }
-      },
-      {
         "module": "xray_epipolar_consistency.parameterization.detector_orientation",
         "classname": "DetectorOrientation",
-        "parameters": {
-          "tilt_roll": { "opt": true },
-          "slant_yaw": { "opt": true },
-          "skew_pitch": { "opt": true }
+        "parameters": {},
+        "prior_knowledge": {
+          "iso_center": [
+            -6.612112952162971e-18,
+            4.379241944401144e-12,
+            -1.3004468255284603e-17
+          ],
+          "rotation_axis": [
+            0.0,
+            1.0,
+            -0.0
+          ],
+          "sdd": -224.99909973122033,
+          "sid": 2.6995999813097957,
+          "first_principal_ray": [
+            0.0,
+            0.0,
+            1.0
+          ]
         }
       }
     ]
@@ -28,7 +35,7 @@
   "kwargs": {
     "options": {
       "maxiter": 50,
-      "ftol": 1e-5
+      "ftol": 1e-05
     }
   }
 }

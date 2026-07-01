@@ -7,10 +7,32 @@
     "classname": "ParameterizationChain",
     "parameterizations": [
       {
-        "module": "xray_epipolar_consistency.parameterization.detector_orientation",
-        "classname": "DetectorOrientation",
-        "parameters": {},
-        "prior_knowledge": null
+        "module": "xray_epipolar_consistency.parameterization.source_shift_agc",
+        "classname": "SourceShiftAGC",
+        "parameters": {
+          "source_shift_y": {
+            "opt": true
+          }
+        },
+        "prior_knowledge": {
+          "iso_center": [
+            -1.7159378587331118e-18,
+            -0.0035877587747711304,
+            -3.95112875722407e-18
+          ],
+          "rotation_axis": [
+            0.0,
+            -1.0,
+            1.1102230246251565e-16
+          ],
+          "sdd": -224.99909973122033,
+          "sid": 2.6996023653680754,
+          "first_principal_ray": [
+            -0.0012104109144425133,
+            -0.0013289962452952418,
+            0.999998384335894
+          ]
+        }
       }
     ]
   },

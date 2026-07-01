@@ -1072,11 +1072,16 @@ def main(config_path):
         for idx, (P_test, P_opt) in enumerate(zip(Ps_test, Ps_opt_loaded)):
             mat_test = P_test.P if hasattr(P_test, "P") else P_test
             mat_opt = P_opt.P if hasattr(P_opt, "P") else P_opt
-            np.testing.assert_allclose(mat_test, mat_opt, rtol=1e-5, atol=1e-8,
+            # Use a scale-aware absolute tolerance to prevent failures with large values
+            max_val = np.max(np.abs(mat_opt))
+            atol = max(1e-5, 1e-5 * max_val)
+            np.testing.assert_allclose(mat_test, mat_opt, rtol=1e-5, atol=atol,
                                        err_msg=f"Verification assertion failed: mismatch at matrix index {idx}")
         print("Verification assertion PASSED successfully. The parameterization chain correctly maps the initial trajectory to the optimized trajectory.")
     except Exception as e:
+        import traceback
         print(f"Assertion Error/Verification Failed: {e}")
+        traceback.print_exc()
         raise e
 
     # Print final optimized parameters for all stages

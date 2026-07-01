@@ -1,0 +1,23 @@
+{
+  "name": "detector_movement",
+  "module": "xray_epipolar_consistency.optimizer",
+  "classname": "OptimizerPowell",
+  "parameterization": {
+    "module": "xray_epipolar_consistency.parameterization.base",
+    "classname": "ParameterizationChain",
+    "parameterizations": [
+      {
+        "module": "xray_epipolar_consistency.parameterization.detector_orientation",
+        "classname": "DetectorOrientation",
+        "parameters": {},
+        "prior_knowledge": null
+      }
+    ]
+  },
+  "kwargs": {
+    "options": {
+      "maxiter": 200,
+      "ftol": 1e-06
+    }
+  }
+}
