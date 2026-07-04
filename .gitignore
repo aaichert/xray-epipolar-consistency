@@ -49,6 +49,3 @@ output/
 
 # Binary files
 *.bin
-
-# Ignore local calibration stage configs
-xray_epipolar_consistency/tools/config/calibration_correction/*.json

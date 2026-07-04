@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Sequence
 from scipy.optimize import minimize
+from ProjectiveGeometry23.central_projection import ProjectionMatrix
 
 class OptimizationProblem:
     """
@@ -10,9 +11,16 @@ class OptimizationProblem:
     def __init__(self, scan, parameterization, status_callback=None):
         self.scan = scan
         self.parameterization = parameterization
-        self.image_sizes = [P.image_size.copy() for P in self.scan.Ps]
-        self.pixel_spacings = [P.pixel_spacing for P in self.scan.Ps]
-        self.Ps_original = [P.P.copy() for P in self.scan.Ps]
+        # Original unaltered projection matrices for this stage
+        self.Ps_original = [
+            ProjectionMatrix(P.P.copy(), P.image_size, P.pixel_spacing)
+            for P in self.scan.Ps
+        ]
+        # Working copy, initially identical to a copy of Ps_original
+        self.Ps_current = [
+            ProjectionMatrix(P.P.copy(), P.image_size, P.pixel_spacing)
+            for P in self.Ps_original
+        ]
         self.status_callback = status_callback
         self.iteration = 0
         self.cost_function_values = []
@@ -24,12 +32,7 @@ class OptimizationProblem:
         if self.is_cancelled:
             raise RuntimeError("Optimization cancelled by user")
         self.parameterization.set_parameter_vector(x)
-        from ProjectiveGeometry23.central_projection import ProjectionMatrix
-        Ps_pm = [
-            ProjectionMatrix(P_arr.copy(), image_size, pixel_spacing)
-            for P_arr, image_size, pixel_spacing in zip(self.Ps_original, self.image_sizes, self.pixel_spacings)
-        ]
-        Ps_corrected = self.parameterization.apply_to_trajectory(Ps_pm)
+        Ps_corrected = self.parameterization.apply_to_trajectory(self.Ps_current)
         self.scan.set_projection_matrices(Ps_corrected)
         val, cost_matrix = self.scan.compute_epipolar_consistency()
         self.cost_function_values += [val]
@@ -56,7 +59,13 @@ class OptimizerLBFGS(Optimizer):
     L-BFGS-B optimization algorithm implementation.
     """
     def __init__(self, **kwargs):
-        self.options = kwargs.get("options", {"maxiter": 200, "ftol": 1e-12, "gtol": 1e-12})
+        self.options = {
+            "maxiter": 200,
+            "ftol": 1e-12,
+            "gtol": 1e-12,
+            "eps": 1e-3
+        }
+        self.options.update(kwargs.get("options", {}))
 
     def optimize(self, problem: OptimizationProblem) -> list[float]:
         import numpy as np
@@ -78,15 +87,6 @@ class OptimizerLBFGS(Optimizer):
 
             # Store the starting values for this pass
             pass_start_values = {name: problem.parameterization[name]["value"] for name in original_active}
-
-            # Estimate prior knowledge on the current Ps_original
-            problem.parameterization.prior_knowledge = None
-            from ProjectiveGeometry23.central_projection import ProjectionMatrix
-            Ps_pm = [
-                ProjectionMatrix(P_arr.copy(), image_size, pixel_spacing)
-                for P_arr, image_size, pixel_spacing in zip(problem.Ps_original, problem.image_sizes, problem.pixel_spacings)
-            ]
-            problem.parameterization.estimateTrajectoryParameters(Ps_pm)
 
             out_of_bounds_occurred = False
 
@@ -154,13 +154,7 @@ class OptimizerLBFGS(Optimizer):
             # If this is the first pass and we are going to run a second pass:
             if pass_idx == 0:
                 # Update baseline trajectory using the successfully optimized parameters of Pass 1
-                from ProjectiveGeometry23.central_projection import ProjectionMatrix
-                Ps_pm = [
-                    ProjectionMatrix(P_arr.copy(), image_size, pixel_spacing)
-                    for P_arr, image_size, pixel_spacing in zip(problem.Ps_original, problem.image_sizes, problem.pixel_spacings)
-                ]
-                Ps_new_base = problem.parameterization.apply_to_trajectory(Ps_pm)
-                problem.Ps_original = [P.P.copy() for P in Ps_new_base]
+                problem.Ps_current = problem.parameterization.apply_to_trajectory(problem.Ps_current)
                 # Reset all parameters to 0.0 before re-enabling them for the second pass
                 for name in original_active:
                     problem.parameterization[name]["value"] = 0.0

@@ -72,8 +72,15 @@ class Scan:
                 I0 = float(self.Is[0].max())
                 if I0 <= 0:
                     I0 = 1.0
+                first_transformed = -np.log(np.clip(self.Is[0] / I0, 1e-6, 1.0)) * 20.0
+                max_val = float(first_transformed.max())
             else:
                 I0 = None
+                max_val = float(self.Is[0].max())
+
+            if max_val <= 0:
+                max_val = 1.0
+            self.max_val = max_val
 
             self._prev_I0 = I0
             self.size_t = int(np.hypot(*self.Is[0].shape[:2]) * dtr_size_factor)
@@ -84,6 +91,9 @@ class Scan:
             for img in pbar(self.Is, desc="Radon transform"):
                 if convert_to_line_integral:
                     img = -np.log(np.clip(img / I0, 1e-6, 1.0)) * 20.0
+
+                # Max-normalization occurs AFTER line integral conversion
+                img = img / self.max_val
 
                 img = gaussian_filter(img, sigma=gaussian_sigma)
 

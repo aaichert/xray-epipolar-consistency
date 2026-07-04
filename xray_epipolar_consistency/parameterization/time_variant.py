@@ -86,13 +86,21 @@ class TimeVariant(ParameterizationBase):
             
         ref_params = deepcopy(self.ref_inst.parameters)
         for name, p_info in ref_params.items():
-            if p_info["opt"]:
+            cp_key_0 = f"{name}_cp0"
+            if cp_key_0 in self.parameters:
+                p_info["opt"] = self.parameters[cp_key_0]["opt"]
+                p_info["range"] = list(self.parameters[cp_key_0]["range"]) if self.parameters[cp_key_0].get("range") is not None else None
+                
                 val_list = []
                 for cp in range(self.num_control_points):
                     key = f"{name}_cp{cp}"
                     if key in self.parameters:
                         val_list.append(self.parameters[key]["value"])
                 p_info["value"] = val_list
+            elif name in self.parameters:
+                p_info["opt"] = self.parameters[name]["opt"]
+                p_info["range"] = list(self.parameters[name]["range"]) if self.parameters[name].get("range") is not None else None
+                p_info["value"] = self.parameters[name]["value"]
                 
         return {
             "module": self.__class__.__module__,
@@ -192,12 +200,28 @@ class LinearDrift(TimeVariant):
             p1 = y[idx + 1]
             ref_params = (1.0 - t) * p0 + t * p1
             self.ref_inst.set_parameter_vector(ref_params)
+            
+            # Interpolate non-optimized parameters if they are control point lists
+            for name, p_info in self.ref_inst.parameters.items():
+                if not p_info["opt"]:
+                    v_val = self.parameters[name]["value"]
+                    if isinstance(v_val, (list, np.ndarray, tuple)):
+                        v0 = v_val[idx]
+                        v1 = v_val[idx + 1]
+                        self.ref_inst.parameters[name]["value"] = float((1.0 - t) * v0 + t * v1)
+                    else:
+                        self.ref_inst.parameters[name]["value"] = float(v_val)
+
             Ps_out.append(self.ref_inst.apply_stationary(P))
         return Ps_out
 
     def apply_stationary(self, P, params=None):
         if params is not None:
             self.ref_inst.set_parameter_vector(params)
+        for name, p_info in self.ref_inst.parameters.items():
+            val = p_info["value"]
+            if isinstance(val, (list, np.ndarray, tuple)):
+                p_info["value"] = float(val[0])
         return self.ref_inst.apply_stationary(P)
 
 
@@ -226,14 +250,35 @@ class ContinuousMotion(TimeVariant):
         lmbdas = np.linspace(0.0, 1.0, len(Ps))
         all_ref_params = cs(lmbdas)
         
+        # Build cubic splines for any non-optimized parameters that are lists/arrays
+        non_opt_splines = {}
+        for name, p_info in self.ref_inst.parameters.items():
+            if not p_info["opt"]:
+                v_val = self.parameters[name]["value"]
+                if isinstance(v_val, (list, np.ndarray, tuple)):
+                    non_opt_splines[name] = CubicSpline(x, v_val)
+        
         Ps_out = []
         for i, P in enumerate(Ps):
             self.ref_inst.set_parameter_vector(all_ref_params[i])
+            
+            # Interpolate non-optimized parameters if they are control point lists
+            for name, p_info in self.ref_inst.parameters.items():
+                if not p_info["opt"]:
+                    if name in non_opt_splines:
+                        self.ref_inst.parameters[name]["value"] = float(non_opt_splines[name](lmbdas[i]))
+                    else:
+                        self.ref_inst.parameters[name]["value"] = float(self.parameters[name]["value"])
+
             Ps_out.append(self.ref_inst.apply_stationary(P))
         return Ps_out
 
     def apply_stationary(self, P, params=None):
         if params is not None:
             self.ref_inst.set_parameter_vector(params)
+        for name, p_info in self.ref_inst.parameters.items():
+            val = p_info["value"]
+            if isinstance(val, (list, np.ndarray, tuple)):
+                p_info["value"] = float(val[0])
         return self.ref_inst.apply_stationary(P)
 

@@ -1,27 +1,119 @@
 {
-  "name": "Object Motion Spline (Breathing)",
+  "name": "Suggested Geometry Optimization (d_max=2.5px)",
   "module": "xray_epipolar_consistency.optimizer",
-  "classname": "OptimizerPowell",
+  "classname": "OptimizerLBFGS",
   "parameterization": {
-    "module": "xray_epipolar_consistency.parameterization.time_variant",
-    "classname": "ContinuousMotion",
-    "num_control_points": 5,
-    "referenced_classname": "ObjectPose",
-    "referenced_config": {
-      "parameters": {
-        "translation_x": { "opt": true },
-        "translation_y": { "opt": true },
-        "translation_z": { "opt": true },
-        "rotation_x": { "opt": true },
-        "rotation_y": { "opt": true },
-        "rotation_z": { "opt": true }
+    "module": "xray_epipolar_consistency.parameterization.base",
+    "classname": "ParameterizationChain",
+    "parameterizations": [
+      {
+        "module": "xray_epipolar_consistency.parameterization.time_variant",
+        "classname": "ContinuousMotion",
+        "num_control_points": 5,
+        "referenced_module": "xray_epipolar_consistency.parameterization.object_pose",
+        "referenced_classname": "ObjectPose",
+        "referenced_config": {
+          "parameters": {
+            "translation_x": {
+              "description": "Object translation X [mm]",
+              "value": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range": [
+                -0.5,
+                0.5
+              ],
+              "opt": true
+            },
+            "translation_y": {
+              "description": "Object translation Y [mm]",
+              "value": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range": [
+                -0.5,
+                0.5
+              ],
+              "opt": true
+            },
+            "translation_z": {
+              "description": "Object translation Z [mm]",
+              "value": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range": [
+                -0.5,
+                0.5
+              ],
+              "opt": true
+            },
+            "rotation_x": {
+              "description": "Object rotation X [degrees]",
+              "value": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range": [
+                -0.5,
+                0.5
+              ],
+              "opt": true
+            },
+            "rotation_y": {
+              "description": "Object rotation Y [degrees]",
+              "value": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range": [
+                -0.5,
+                0.5
+              ],
+              "opt": true
+            },
+            "rotation_z": {
+              "description": "Object rotation Z [degrees]",
+              "value": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range": [
+                -0.5,
+                0.5
+              ],
+              "opt": true
+            }
+          },
+          "prior_knowledge": null
+        }
       }
-    }
+    ]
   },
   "kwargs": {
     "options": {
       "maxiter": 50,
-      "ftol": 1e-5
+      "ftol": 1e-05
     }
   }
 }
