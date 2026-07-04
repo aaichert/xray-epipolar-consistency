@@ -16,8 +16,13 @@ class OptimizationProblem:
         self.status_callback = status_callback
         self.iteration = 0
         self.cost_function_values = []
+        self.best_cost = float('inf')
+        self.best_parameters = None
+        self.is_cancelled = False
         
     def cost_function(self, x: Sequence[float]) -> float:
+        if self.is_cancelled:
+            raise RuntimeError("Optimization cancelled by user")
         self.parameterization.set_parameter_vector(x)
         from ProjectiveGeometry23.central_projection import ProjectionMatrix
         Ps_pm = [
@@ -28,6 +33,9 @@ class OptimizationProblem:
         self.scan.set_projection_matrices(Ps_corrected)
         val, cost_matrix = self.scan.compute_epipolar_consistency()
         self.cost_function_values += [val]
+        if val < self.best_cost:
+            self.best_cost = val
+            self.best_parameters = list(x)
         if self.status_callback is not None:
             self.status_callback(self.iteration, self.parameterization, val, cost_matrix)
         self.iteration = self.iteration + 1

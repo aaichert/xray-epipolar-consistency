@@ -1,5 +1,5 @@
 {
-  "name": "Stage 2",
+  "name": "Suggested Geometry Optimization (d_max=10.0px)",
   "module": "xray_epipolar_consistency.optimizer",
   "classname": "OptimizerLBFGS",
   "parameterization": {
@@ -10,28 +10,53 @@
         "module": "xray_epipolar_consistency.parameterization.detector_orientation",
         "classname": "DetectorOrientation",
         "parameters": {
-          "tilt_roll": { "opt": true },
-          "slant_yaw": { "opt": true },
-          "skew_pitch": { "opt": true }
-        }
+          "tilt_roll": {
+            "opt": true,
+            "range": [
+              -1.5821021559171515,
+              1.5821021559171515
+            ]
+          },
+          "slant_yaw": {
+            "opt": true,
+            "range": [
+              -0.10324478062896898,
+              0.10324478062896898
+            ]
+          },
+          "skew_pitch": {
+            "opt": true,
+            "range": [
+              -0.10325374007837299,
+              0.10325374007837299
+            ]
+          }
+        },
+        "prior_knowledge": null
       },
       {
         "module": "xray_epipolar_consistency.parameterization.rotation_axis",
         "classname": "RotationAxis",
         "parameters": {
-          "tilt_pitch": { "opt": false },
-          "tilt_roll": { "opt": false },
-          "offset_lateral": { "opt": true },
-          "offset_radial": { "opt": true }
-        }
+          "offset_lateral": {
+            "opt": false
+          },
+          "offset_radial": {
+            "opt": true,
+            "range": [
+              -2.5,
+              2.5
+            ]
+          }
+        },
+        "prior_knowledge": null
       }
     ]
   },
   "kwargs": {
     "options": {
       "maxiter": 50,
-      "ftol": 1e-5,
-      "gtol": 1e-5
+      "ftol": 1e-05
     }
   }
 }

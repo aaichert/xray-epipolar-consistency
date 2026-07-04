@@ -32,6 +32,12 @@ dependencies = [
     "ct-recon-fdk-astra"
 ]
 
+[project.scripts]
+sloppy-direction-analysis = "xray_epipolar_consistency.tools.sloppy_direction_analysis:main"
+sloppy_direction_analysis = "xray_epipolar_consistency.tools.sloppy_direction_analysis:main"
+optimization-advisor = "xray_epipolar_consistency.tools.optimization_advisor:main"
+optimization_advisor = "xray_epipolar_consistency.tools.optimization_advisor:main"
+
 [project.optional-dependencies]
 test = ["pytest"]
 

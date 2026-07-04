@@ -1,5 +1,5 @@
 {
-  "name": "AGC",
+  "name": "Suggested Geometry Optimization (d_max=10.0px)",
   "module": "xray_epipolar_consistency.optimizer",
   "classname": "OptimizerPowell",
   "parameterization": {
@@ -10,8 +10,14 @@
         "module": "xray_epipolar_consistency.parameterization.source_shift_agc",
         "classname": "SourceShiftAGC",
         "parameters": {
+          "source_shift_x": {
+            "opt": false
+          },
           "source_shift_y": {
-            "opt": true
+            "opt": false
+          },
+          "source_shift_z": {
+            "opt": false
           }
         },
         "prior_knowledge": {
@@ -33,6 +39,74 @@
             0.999998384335894
           ]
         }
+      },
+      {
+        "module": "xray_epipolar_consistency.parameterization.rotation_axis",
+        "classname": "RotationAxis",
+        "parameters": {
+          "tilt_pitch": {
+            "opt": true,
+            "range": [
+              -1.0,
+              1.0
+            ]
+          },
+          "tilt_roll": {
+            "opt": false
+          },
+          "offset_lateral": {
+            "opt": false
+          },
+          "offset_radial": {
+            "opt": true,
+            "range": [
+              -2.5,
+              2.5
+            ]
+          }
+        },
+        "prior_knowledge": null
+      },
+      {
+        "module": "xray_epipolar_consistency.parameterization.detector_orientation",
+        "classname": "DetectorOrientation",
+        "parameters": {
+          "tilt_roll": {
+            "opt": true,
+            "range": [
+              -1.5821021559171515,
+              1.5821021559171515
+            ]
+          },
+          "slant_yaw": {
+            "opt": true,
+            "range": [
+              -0.10324478062896898,
+              0.10324478062896898
+            ]
+          },
+          "skew_pitch": {
+            "opt": true,
+            "range": [
+              -0.10325374007837299,
+              0.10325374007837299
+            ]
+          }
+        },
+        "prior_knowledge": null
+      },
+      {
+        "module": "xray_epipolar_consistency.parameterization.detector_shift",
+        "classname": "DetectorShift",
+        "parameters": {
+          "shift_u": {
+            "opt": false
+          },
+          "shift_v": {
+            "opt": false
+          }
+        },
+        "prior_knowledge": null
       }
     ]
   },

@@ -150,6 +150,7 @@ class CalibrationAndMotionCorrection:
                 sys.stdout.write("\r\033[K" + msg)
                 sys.stdout.flush()
             problem = OptimizationProblem(self.scan, stage_parameterization, info_callback)
+            self.current_problem = problem
             optimized_vector = optimizer.optimize(problem)
             print()
 
