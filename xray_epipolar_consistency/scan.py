@@ -191,7 +191,7 @@ class Scan:
         f = self.Ps[0].getFocalLengthPx()  # square pixels assumed
         cx, cy = self.Ps[0].getPrincipalPoint()[0:2]
         fov = min(np.arctan(abs(cx) / f), np.arctan(abs(cy) / f))
-        self.object_radius_mm = float(sid * np.sin(fov))
+        self.object_radius_mm = 1.5 * float(sid * np.sin(fov))
 
         return {
             "T_norm": self.T_norm,
