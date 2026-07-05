@@ -29,7 +29,7 @@ dist/
 *.tif
 *.html
 xray_epipolar_consistency/example_data/
-
+xray_epipolar_consistency/tools/config/
 
 # Jupyter Notebooks
 *.ipynb

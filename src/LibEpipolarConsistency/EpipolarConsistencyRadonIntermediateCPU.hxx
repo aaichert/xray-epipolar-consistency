@@ -99,9 +99,10 @@ namespace EpipolarConsistency
 			// Length or normal vector
 			float length=sqrt(line[0]*line[0]+line[1]*line[1]);
 			// Angle between line normal and x-axis (scaled from 0 to +2)
-			line[0]=atan2(line[1],line[0])/Pi+1.0f;
+			line[0]=atan2(line[1],line[0])/Pi;
+			if (line[0]<0) line[0]+=2.0f;
 			// Distance to the origin (scaled to DTR bins)
-			line[1]=(line[2]/length)/range_t+0.5f;
+			line[1]=-(line[2]/length)/range_t+0.5f;
 
 			// Return zero for lines far outside image
 			if (line[1]<0.f||line[1]>1.0f)
@@ -111,12 +112,12 @@ namespace EpipolarConsistency
 			if (line[0]>1)
 			{
 				if (isDerivative)
-					return -tex2D<float>(dtr,2.f-line[0],line[1],px_alpha,px_t);
+					return -tex2D<float>(dtr,line[0]-1.f,1.f-line[1],px_alpha,px_t);
 				else
-					return tex2D<float>(dtr,2.f-line[0],line[1],px_alpha,px_t);
+					return tex2D<float>(dtr,line[0]-1.f,1.f-line[1],px_alpha,px_t);
 			}
 			else
-				return tex2D<float>(dtr,1.f-line[0],1.f-line[1],px_alpha,px_t);
+				return tex2D<float>(dtr,line[0],line[1],px_alpha,px_t);
 		}
 
 		static inline void shiftOriginAndNormlaize(float x, float y, float* Ki)
