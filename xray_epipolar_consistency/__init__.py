@@ -29,7 +29,7 @@ from .optimizer import (
     OptimizerLBFGS,
     OptimizerPowell
 )
-from .calibration_correction import CalibrationAndMotionCorrection
+from .geometry_correction import CalibrationAndMotionCorrection
 from .progress import ProgressBar
 
 import importlib.resources as _pkg_resources

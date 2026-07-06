@@ -910,64 +910,36 @@ def main(config_path):
         initial_cfg, optimized_cfg = reconstruct_configs
         import subprocess
         
-        # Locate reconstruct.py script
-        reconstruct_file = None
-        try:
-            import reconstruct
-            reconstruct_file = os.path.abspath(reconstruct.__file__)
-            if reconstruct_file.endswith('.pyc'):
-                reconstruct_file = reconstruct_file[:-1]
-            if os.path.isdir(reconstruct_file):
-                reconstruct_file = os.path.join(reconstruct_file, "reconstruct.py")
-        except ImportError:
-            pass
-            
-        if not reconstruct_file or not os.path.exists(reconstruct_file):
-            cur_dir = os.path.dirname(os.path.abspath(__file__))
-            possible_paths = [
-                os.path.normpath(os.path.join(cur_dir, "reconstruct.py")),
-                os.path.normpath(os.path.join(cur_dir, "..", "reconstruct.py")),
-                os.path.normpath(os.path.join(cur_dir, "..", "reconstruct", "reconstruct.py")),
-                "/run/media/aaichert/Intenso/reconstruct/reconstruct.py"
-            ]
-            for p in possible_paths:
-                if os.path.exists(p):
-                    reconstruct_file = p
+        # Reconstruct to the relocated paths
+        recon_misaligned_path = orig_output_path_abs
+        recon_optimized_path = orig_dir / f"{orig_base}_{output_dir.name}{orig_ext}"
+        
+        def run_subprocess_tee(cmd):
+            import subprocess
+            process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+            while True:
+                line = process.stdout.readline()
+                if not line and process.poll() is not None:
                     break
-                    
-        if not reconstruct_file or not os.path.exists(reconstruct_file):
-            print("Warning: Could not locate 'reconstruct.py'. Skipping reconstructions.")
-        else:
-            # Reconstruct to the relocated paths
-            recon_misaligned_path = orig_output_path_abs
-            recon_optimized_path = orig_dir / f"{orig_base}_{output_dir.name}{orig_ext}"
-            
-            def run_subprocess_tee(cmd):
-                import subprocess
-                process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-                while True:
-                    line = process.stdout.readline()
-                    if not line and process.poll() is not None:
-                        break
-                    if line:
-                        sys.stdout.write(line)
-                        sys.stdout.flush()
-                rc = process.poll()
-                if rc != 0:
-                    raise subprocess.CalledProcessError(rc, cmd)
+                if line:
+                    sys.stdout.write(line)
+                    sys.stdout.flush()
+            rc = process.poll()
+            if rc != 0:
+                raise subprocess.CalledProcessError(rc, cmd)
 
-            if not recon_misaligned_path.exists():
-                print(f"Starting initial scan reconstruction (since it does not exist): {recon_misaligned_path}")
-                try:
-                    run_subprocess_tee([sys.executable, reconstruct_file, str(initial_cfg)])
-                except Exception as e:
-                    print(f"Warning: Failed to run initial reconstruction: {e}")
-                
-            print(f"Starting full scan reconstruction: {recon_optimized_path}")
+        if not recon_misaligned_path.exists():
+            print(f"Starting initial scan reconstruction (since it does not exist): {recon_misaligned_path}")
             try:
-                run_subprocess_tee([sys.executable, reconstruct_file, str(optimized_cfg)])
+                run_subprocess_tee(["reconstruct", str(initial_cfg)])
             except Exception as e:
-                print(f"Warning: Failed to run optimized reconstruction: {e}")
+                print(f"Warning: Failed to run initial reconstruction: {e}")
+            
+        print(f"Starting full scan reconstruction: {recon_optimized_path}")
+        try:
+            run_subprocess_tee(["reconstruct", str(optimized_cfg)])
+        except Exception as e:
+            print(f"Warning: Failed to run optimized reconstruction: {e}")
 
 
     # Extract central slices and compute image quality metrics if both reconstructions exist

@@ -1,7 +1,7 @@
 {
   "name": "Suggested Geometry Optimization (d_max=10.0px)",
   "module": "xray_epipolar_consistency.optimizer",
-  "classname": "OptimizerPowell",
+  "classname": "OptimizerLBFGS",
   "parameterization": {
     "module": "xray_epipolar_consistency.parameterization.base",
     "classname": "ParameterizationChain",
@@ -13,8 +13,22 @@
           "source_shift_x": {
             "opt": true,
             "range": [
-              -0.378432033157405,
-              0.378432033157405
+              -0.3784320331561736,
+              0.3784320331561736
+            ]
+          },
+          "source_shift_y": {
+            "opt": true,
+            "range": [
+              -0.3784320331563284,
+              0.3784320331563284
+            ]
+          },
+          "source_shift_z": {
+            "opt": true,
+            "range": [
+              -4.408410213188261,
+              4.408410213188261
             ]
           }
         },
@@ -43,7 +57,7 @@
   "kwargs": {
     "options": {
       "maxiter": 200,
-      "ftol": 1e-12
+      "ftol": 1e-09
     }
   }
 }

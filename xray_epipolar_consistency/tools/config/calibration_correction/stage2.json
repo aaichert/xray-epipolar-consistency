@@ -11,41 +11,21 @@
         "classname": "DetectorOrientation",
         "parameters": {
           "tilt_roll": {
-            "opt": true,
             "range": [
-              -1.5821021559171515,
-              1.5821021559171515
+              -1.0,
+              1.0
             ]
           },
           "slant_yaw": {
-            "opt": true,
             "range": [
-              -0.10324478062896898,
-              0.10324478062896898
+              -1.0,
+              1.0
             ]
           },
           "skew_pitch": {
-            "opt": true,
             "range": [
-              -0.10325374007837299,
-              0.10325374007837299
-            ]
-          }
-        },
-        "prior_knowledge": null
-      },
-      {
-        "module": "xray_epipolar_consistency.parameterization.rotation_axis",
-        "classname": "RotationAxis",
-        "parameters": {
-          "offset_lateral": {
-            "opt": false
-          },
-          "offset_radial": {
-            "opt": true,
-            "range": [
-              -2.5,
-              2.5
+              -1.0,
+              1.0
             ]
           }
         },

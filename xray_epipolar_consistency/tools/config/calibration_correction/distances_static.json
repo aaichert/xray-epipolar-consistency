@@ -3,17 +3,60 @@
   "module": "xray_epipolar_consistency.optimizer",
   "classname": "OptimizerPowell",
   "parameterization": {
-    "module": "xray_epipolar_consistency.parameterization.distance",
-    "classname": "Distance",
-    "parameters": {
-      "delta_sdd": { "opt": true },
-      "delta_sid": { "opt": true }
-    }
+    "module": "xray_epipolar_consistency.parameterization.base",
+    "classname": "ParameterizationChain",
+    "parameterizations": [
+      {
+        "module": "xray_epipolar_consistency.parameterization.distance",
+        "classname": "Distance",
+        "parameters": {
+          "delta_sdd": {
+            "range": [
+              -50.0,
+              50.0
+            ]
+          },
+          "delta_sid": {
+            "range": [
+              -100.0,
+              100.0
+            ],
+            "opt": false
+          },
+          "coupled_distance": {
+            "range": [
+              -5.0,
+              5.0
+            ],
+            "opt": true
+          }
+        },
+        "prior_knowledge": {
+          "iso_center": [
+            7.178382117118473e-16,
+            7.031412489292657e-16,
+            -9.61069288749459e-13
+          ],
+          "rotation_axis": [
+            0.0,
+            2.5637979419682884e-30,
+            1.0
+          ],
+          "sdd": 553.7399999997019,
+          "sid": 210.6600341782697,
+          "first_principal_ray": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    ]
   },
   "kwargs": {
     "options": {
       "maxiter": 50,
-      "ftol": 1e-5
+      "ftol": 1e-05
     }
   }
 }

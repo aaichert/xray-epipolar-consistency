@@ -93,7 +93,9 @@ class Scan:
                     img = -np.log(np.clip(img / I0, 1e-6, 1.0)) * 20.0
 
                 # Max-normalization occurs AFTER line integral conversion
-                img = img / self.max_val
+                # 10 is just a magic number heuristc. Generally, the larger the number
+                # the more focus on high values (strong edges)
+                img = img / self.max_val * 10
 
                 img = gaussian_filter(img, sigma=gaussian_sigma)
 
@@ -191,7 +193,7 @@ class Scan:
         f = self.Ps[0].getFocalLengthPx()  # square pixels assumed
         cx, cy = self.Ps[0].getPrincipalPoint()[0:2]
         fov = min(np.arctan(abs(cx) / f), np.arctan(abs(cy) / f))
-        self.object_radius_mm = 1.5 * float(sid * np.sin(fov))
+        self.object_radius_mm = float(sid * np.sin(fov))
 
         return {
             "T_norm": self.T_norm,
