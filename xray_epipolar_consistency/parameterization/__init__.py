@@ -9,6 +9,7 @@ from xray_epipolar_consistency.parameterization.gantry_angle import GantryAngle
 from xray_epipolar_consistency.parameterization.time_variant import TimeVariant, LinearDrift, ContinuousMotion
 from xray_epipolar_consistency.parameterization.turntable import Turntable
 from xray_epipolar_consistency.parameterization.source_shift_agc import SourceShiftAGC
+from xray_epipolar_consistency.parameterization.refinement import Refinement
 
 __all__ = [
     "ParameterizationBase",
@@ -24,6 +25,7 @@ __all__ = [
     "ContinuousMotion",
     "Turntable",
     "SourceShiftAGC",
+    "Refinement",
     "from_dict"
 ]
 

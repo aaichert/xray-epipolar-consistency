@@ -30,6 +30,9 @@ This document serves as an index for the geometric parameterization modules used
 - **[Turntable](parameterization/turntable.md)**
   Models the complete set of rotation axis and detector misalignments in a turntable CT setup.
 
+- **[Refinement](parameterization/refinement.md)**
+  Models coupled geometric parameters along their near-null-space directions to refine slant/skew, source shifts, and vertical alignment.
+
 - **[Time Variant](parameterization/time_variant.md)**
   Wrappers to model time-varying parameters (like linear drift, continuous spline motion, or jitter) across the trajectory.
 

@@ -12,7 +12,8 @@ from xray_epipolar_consistency.parameterization import (
     GantryAngle,
     LinearDrift,
     ContinuousMotion,
-    Turntable
+    Turntable,
+    Refinement
 )
 
 def get_trajectory():
@@ -198,6 +199,19 @@ def test_all_parameterizations():
         pp = P.getPrincipalPoint().flatten()[:2]
         pp_new = P_new.getPrincipalPoint().flatten()[:2]
         np.testing.assert_allclose(pp_new - pp, expected_shifts[i], atol=1e-7)
+
+    # Test Refinement
+    Ps = get_trajectory()
+    ref = Refinement(parameters={
+        "refine_slant": {"value": 0.5, "opt": True},
+        "refine_skew": {"value": -0.5, "opt": True},
+        "refine_source_x": {"value": 1.0, "opt": True},
+        "refine_axial_z": {"value": -1.5, "opt": True}
+    })
+    Ps_ref = ref.apply_to_trajectory(Ps)
+    assert len(Ps_ref) == 3
+    for P_new in Ps_ref:
+        assert isinstance(P_new, ProjectionMatrix)
 
 
 def test_thermal_drift_config_loading():
