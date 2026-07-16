@@ -37,86 +37,29 @@ def safe_relpath(path, start=None):
 
 def align_trajectories(Ps_opt, Ps_init):
     """
-    Finds a 3D rigid transformation T_align (rotation R, translation t) such that:
-       T_align @ C_opt_i approx C_init_i
-       R @ v_opt_i approx v_init_i
+    Finds a 3D similarity transformation T_align (rotation, translation, scale) such that:
+       T_align @ X_opt approx X_init
     and returns aligned optimized projection matrices:
        P_opt_aligned_i = P_opt_i @ T_align_inv
     """
-    Cs_opt = []
-    Cs_init = []
-    vs_opt = []
-    vs_init = []
+    from ct_recon_fdk_astra.recon_coverage import compute_similarity_transform
     
-    from ProjectiveGeometry23.utils import dehomogenize
+    # We need to extract the raw 3x4 matrices as numpy arrays for compute_similarity_transform
+    mats_ref = [P.P if hasattr(P, "P") else P for P in Ps_init]
+    mats_opt = [P.P if hasattr(P, "P") else P for P in Ps_opt]
     
-    for P_opt, P_init in zip(Ps_opt, Ps_init):
-        # Camera centers
-        C_opt = dehomogenize(P_opt.getCenterOfProjection()).flatten()
-        C_init = dehomogenize(P_init.getCenterOfProjection()).flatten()
-        Cs_opt.append(C_opt)
-        Cs_init.append(C_init)
-        
-        # Principal rays
-        v_opt = P_opt.getPrincipalRay().flatten()
-        v_init = P_init.getPrincipalRay().flatten()
-        vs_opt.append(v_opt)
-        vs_init.append(v_init)
-        
-    Cs_opt = np.array(Cs_opt)
-    Cs_init = np.array(Cs_init)
-    vs_opt = np.array(vs_opt)
-    vs_init = np.array(vs_init)
+    # Let's get the image size (detector size) from the first matrix
+    detector_size = Ps_init[0].image_size if hasattr(Ps_init[0], "image_size") else (600, 400)
     
-    # Calculate characteristic length scale for scaling direction vectors
-    centroid_opt = np.mean(Cs_opt, axis=0)
-    characteristic_length = np.mean(np.linalg.norm(Cs_opt - centroid_opt, axis=1))
-    if characteristic_length < 1e-5:
-        characteristic_length = 100.0
-        
-    # Construct 2 * N points: centers, and centers + characteristic_length * principal_rays
-    pts_opt = np.vstack([Cs_opt, Cs_opt + characteristic_length * vs_opt])
-    pts_init = np.vstack([Cs_init, Cs_init + characteristic_length * vs_init])
-    
-    # Center the datasets
-    mean_opt = np.mean(pts_opt, axis=0)
-    mean_init = np.mean(pts_init, axis=0)
-    
-    pts_opt_centered = pts_opt - mean_opt
-    pts_init_centered = pts_init - mean_init
-    
-    # Compute covariance matrix H
-    H = pts_opt_centered.T @ pts_init_centered
-    
-    # SVD
-    U, S, Vt = np.linalg.svd(H)
-    
-    # Optimal rotation R
-    R = Vt.T @ U.T
-    
-    # Check for reflection
-    if np.linalg.det(R) < 0:
-        Vt_mod = Vt.copy()
-        Vt_mod[2, :] *= -1
-        R = Vt_mod.T @ U.T
-        
-    # Translation t
-    t = mean_init - R @ mean_opt
-    
-    # Construct 4x4 rigid transformation matrix T
-    T_align = np.eye(4)
-    T_align[:3, :3] = R
-    T_align[:3, 3] = t
-    
+    T_align = compute_similarity_transform(mats_ref, mats_opt, detector_size)
     T_align_inv = np.linalg.inv(T_align)
     
-    # Align optimized projection matrices
     Ps_aligned = []
     for P_opt in Ps_opt:
         P_aligned = ProjectionMatrix(
             P_opt.P @ T_align_inv,
-            image_size=P_opt.image_size,
-            pixel_spacing=P_opt.pixel_spacing
+            image_size=P_opt.image_size if hasattr(P_opt, "image_size") else (600, 400),
+            pixel_spacing=P_opt.pixel_spacing if hasattr(P_opt, "pixel_spacing") else 1.0
         )
         Ps_aligned.append(P_aligned)
         
@@ -403,13 +346,11 @@ def main(config_path):
             
             # Resolve reconstruct.py path
             reconstruct_file = None
-            try:
-                import ct_recon_fdk_astra.reconstruct as reconstruct
-                reconstruct_file = os.path.abspath(reconstruct.__file__)
-                if reconstruct_file.endswith('.pyc'):
-                    reconstruct_file = reconstruct_file[:-1]
-            except Exception:
-                pass
+            import ct_recon_fdk_astra.reconstruct as reconstruct
+            reconstruct_file = os.path.abspath(reconstruct.__file__)
+            if reconstruct_file.endswith('.pyc'):
+                reconstruct_file = reconstruct_file[:-1]
+
 
             if not reconstruct_file:
                 cur_dir = os.path.dirname(os.path.abspath(__file__))

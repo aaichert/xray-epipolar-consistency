@@ -36,6 +36,7 @@ dependencies = [
 sloppy-direction-analysis = "xray_epipolar_consistency.tools.sloppy_direction_analysis:main"
 optimization-advisor = "xray_epipolar_consistency.tools.optimization_advisor:main"
 geometry-correction = "xray_epipolar_consistency.tools.geometry_correction:main"
+geometry-refinement = "xray_epipolar_consistency.tools.geometry_refinement:main"
 
 [project.optional-dependencies]
 test = ["pytest"]

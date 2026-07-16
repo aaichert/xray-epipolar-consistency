@@ -38,16 +38,19 @@ from pathlib import Path as _Path
 def get_data_path(*relative_parts: str) -> _Path:
     """Return the absolute path to a file inside the installed package data.
     """
-    base = _pkg_resources.files("xray_epipolar_consistency")
+    base = _pkg_resources.files("xray_epipolar_consistency").joinpath(*relative_parts)
+
+    if not isinstance(base, _Path):
+        path_str = "/".join(relative_parts)
+        print(f"Extracting package data: {path_str} (this may take a few seconds on first run)...")
 
     with _pkg_resources.as_file(base) as base_fs:
-        base_fs = _Path(base_fs).resolve()
-
-    result = base_fs.joinpath(*relative_parts)
+        result = _Path(base_fs).resolve()
 
     if not result.exists():
+        path_str = "/".join(relative_parts)
         raise FileNotFoundError(
-            f"Package data not found: {'/'.join(relative_parts)}"
+            f"Package data not found: {path_str}"
         )
 
     return result
