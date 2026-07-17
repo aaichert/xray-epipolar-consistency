@@ -264,28 +264,8 @@ def main(config_path):
         print(stage_param_ref.to_str_table(["opt", "name", "value", "range", "description"]))
         print()
 
-        # 2. Iterate through all views sequentially and optimize each in-place
-        pbar = tqdm(range(len(Ps_all)), desc=f"{stage_name} Refinement")
-        for i in pbar:
-            P_i = Ps_all[i]
-
-            # A. Load image i dynamically
-            if full_stack_data is not None:
-                img_i = full_stack_data[i].astype(np.float32)
-            else:
-                image_name = scan_full["image_files"][i]
-                image_path_full = (data_dir_path_full / image_name).resolve()
-                if image_path_full.suffix.lower() == '.nrrd':
-                    import nrrd
-                    img_i, _ = nrrd.read(str(image_path_full))
-                    img_i = np.squeeze(img_i)
-                    if img_i.ndim == 2:
-                        img_i = img_i.T
-                    img_i = img_i.astype(np.float32)
-                else:
-                    img_i = imread(image_path_full).astype(np.float32)
-
-            # B. Compute DTR for view i
+        # Define local helper function to refine a single projection matrix
+        def refine_single_view(img_i, P_i, Ps_ref_list, dtrs_ref_list):
             dtr_i = compute_single_dtr(
                 img_i,
                 convert_to_line_integral=metric_config.get("convert_to_line_integral", False),
@@ -296,22 +276,22 @@ def main(config_path):
                 size_alpha=reference_scan.size_alpha
             )
 
-            # C. Dynamic Reference Filtering: Find and remove closest source position in reference set R
+            # Dynamic Reference Filtering: Find and remove closest source position in reference set R
             C_i = dehomogenize(P_i.getCenterOfProjection()).flatten()
             distances = np.linalg.norm(Cs_ref - C_i, axis=1)
             closest_local_idx = np.argmin(distances)
             
-            R_prime_local_indices = [r for r in range(len(Ps_ref)) if r != closest_local_idx]
+            R_prime_local_indices = [r for r in range(len(Ps_ref_list)) if r != closest_local_idx]
 
-            Ps_ref_subset = [Ps_ref[r] for r in R_prime_local_indices]
-            dtrs_ref_subset = [reference_scan.dtrs[r] for r in R_prime_local_indices]
+            Ps_ref_subset = [Ps_ref_list[r] for r in R_prime_local_indices]
+            dtrs_ref_subset = [dtrs_ref_list[r] for r in R_prime_local_indices]
 
-            # D. Copy the initialized stationary parameterization and reset parameter values to 0.0
+            # Copy the initialized stationary parameterization and reset parameter values to 0.0
             param_i = deepcopy(stage_param_ref)
             for p_name in param_i:
                 param_i[p_name]["value"] = 0.0
 
-            # E. Setup SingleProjectionOptimizationProblem
+            # Setup SingleProjectionOptimizationProblem
             problem_i = SingleProjectionOptimizationProblem(
                 param_i,
                 P_i,
@@ -323,7 +303,7 @@ def main(config_path):
                 reference_scan.num_planes
             )
 
-            # F. Run a simple, single-pass optimization using scipy.optimize.minimize directly
+            # Run scipy.optimize.minimize
             active_names = [name for name, p in param_i.items() if p["opt"]]
             x0 = np.array([param_i[name]["value"] for name in active_names])
             bounds = [param_i[name]["range"] for name in active_names]
@@ -353,17 +333,67 @@ def main(config_path):
             else:
                 optimized_vector = x0
 
-            # H. Save optimized projection matrix to Ps_all[i]
+            # Save optimized projection matrix
             param_i.set_parameter_vector(optimized_vector)
-            Ps_all[i] = param_i.apply_to_trajectory([Ps_all[i]])[0]
+            P_refined = param_i.apply_to_trajectory([P_i])[0]
+            
+            return P_refined, problem_i.best_cost
+
+        # 2. Warmup Phase: Run view-by-view refinement on Ps_ref if enabled
+        if config.get("refinement_warmup", False):
+            print(f"\n--- Running Refinement Warmup: View-by-view calibration of {len(Ps_ref)} reference views ---")
+            pbar = tqdm(range(len(Ps_ref)), desc="Refinement Warmup")
+            for i in pbar:
+                P_refined, best_cost = refine_single_view(
+                    Is_ref[i], Ps_ref[i],
+                    Ps_ref_list=Ps_ref,
+                    dtrs_ref_list=reference_scan.dtrs
+                )
+                Ps_ref[i] = P_refined
+                pbar.set_description(f"Warmup View {i:3d} (ECC: {best_cost:.4e})")
+
+            # Re-initialize reference scan on GPU with refined reference views
+            print("\nRe-initializing reference scan metrics with refined reference views...")
+            reference_scan = Scan(Is_ref, Ps_ref)
+            reference_scan.init_epipolar_consistency(**metric_config)
+            
+            # Recalculate Cs_ref (source positions) for the main refinement loop
+            Cs_ref = np.array([dehomogenize(P.getCenterOfProjection()).flatten() for P in Ps_ref])
+
+        # 3. Iterate through all views sequentially and optimize each in-place
+        pbar = tqdm(range(len(Ps_all)), desc=f"{stage_name} Refinement")
+        for i in pbar:
+            P_i = Ps_all[i]
+
+            # A. Load image i dynamically
+            if full_stack_data is not None:
+                img_i = full_stack_data[i].astype(np.float32)
+            else:
+                image_name = scan_full["image_files"][i]
+                image_path_full = (data_dir_path_full / image_name).resolve()
+                if image_path_full.suffix.lower() == '.nrrd':
+                    import nrrd
+                    img_i, _ = nrrd.read(str(image_path_full))
+                    img_i = np.squeeze(img_i)
+                    if img_i.ndim == 2:
+                        img_i = img_i.T
+                    img_i = img_i.astype(np.float32)
+                else:
+                    img_i = imread(image_path_full).astype(np.float32)
+
+            # B. Call the helper function to refine view i
+            P_refined, best_cost = refine_single_view(
+                img_i, P_i,
+                Ps_ref_list=Ps_ref,
+                dtrs_ref_list=reference_scan.dtrs
+            )
+            Ps_all[i] = P_refined
 
             # Update progress bar description with best cost
-            pbar.set_description(f"View {i:3d} (ECC: {problem_i.best_cost:.4e})")
+            pbar.set_description(f"View {i:3d} (ECC: {best_cost:.4e})")
 
-            # I. Memory Cleanup: Delete large arrays/DTRs immediately and collect garbage
+            # C. Memory Cleanup: Delete large arrays/DTRs immediately and collect garbage
             del img_i
-            del dtr_i
-            del problem_i
             gc.collect()
 
     print(f"\nRefinement optimization completed in {time.time() - t_start:.2f} seconds.")
